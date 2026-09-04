@@ -13,7 +13,8 @@ output "vault_id" {
   value       = azurerm_key_vault.main.id
 }
 
-output "sql_connection_string_secret_id" {
-  description = "Secret ID for the SQL connection string"
-  value       = azurerm_key_vault_secret.sql_connection_string.id
+output "sql_connection_string_secret_ids" {
+  description = "Map of service name → secret ID"
+  value       = { for name, secret in azurerm_key_vault_secret.sql_connection_strings : name => secret.id }
 }
+

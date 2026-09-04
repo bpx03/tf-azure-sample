@@ -18,32 +18,57 @@ tags = {
 project_name = "dotnetapi"
 
 # ---------------------------------------------------------------------------
-# App Service (.NET 10 API)
+# Microservices
 # ---------------------------------------------------------------------------
 
-app_service_plan_sku       = "P1v3"
-app_service_instance_count = 2
-dotnet_version             = "v10.0"
+microservices = {
+  orders = {
+    plan_sku          = "P1v3"
+    instance_count    = 2
+    dotnet_version    = "v10.0"
+    repo_url          = "https://github.com/your-org/orders-service.git"
+    repo_branch       = "main"
+    sql_sku_name      = "GP_Gen5_8"
+    sql_max_size_gb   = 100
+    sql_database_name = "orders-db"
+  }
 
-api_repo_url    = "https://github.com/your-org/your-api.git"
-api_repo_branch = "main"
+  users = {
+    plan_sku          = "P1v3"
+    instance_count    = 2
+    dotnet_version    = "v10.0"
+    repo_url          = "https://github.com/your-org/users-service.git"
+    repo_branch       = "main"
+    sql_sku_name      = "GP_Gen5_8"
+    sql_max_size_gb   = 100
+    sql_database_name = "users-db"
+  }
+
+  payments = {
+    plan_sku          = "P1v3"
+    instance_count    = 2
+    dotnet_version    = "v10.0"
+    repo_url          = "https://github.com/your-org/payments-service.git"
+    repo_branch       = "main"
+    sql_sku_name      = "GP_Gen5_8"
+    sql_max_size_gb   = 100
+    sql_database_name = "payments-db"
+  }
+}
 
 # ---------------------------------------------------------------------------
 # Static Web App (React frontend)
 # ---------------------------------------------------------------------------
 
-frontend_repo_url             = "https://github.com/your-org/your-frontend.git"
-frontend_repo_branch          = "main"
+frontend_repo_url    = "https://github.com/your-org/your-frontend.git"
+frontend_repo_branch = "main"
 
 # ---------------------------------------------------------------------------
-# Azure SQL Database
+# Azure SQL Server (shared)
 # ---------------------------------------------------------------------------
 
 sql_server_admin_user     = "sqladmin"
 sql_server_admin_password = "REPLACE_WITH_KEYVAULT_SECRET"  # MUST come from Key Vault
-sql_database_name         = "appdb"
-sql_sku_name              = "GP_Gen5_8"
-sql_max_size_gb           = 100
 
 # ---------------------------------------------------------------------------
 # Key Vault

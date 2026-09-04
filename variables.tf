@@ -35,36 +35,36 @@ variable "project_name" {
 }
 
 # ---------------------------------------------------------------------------
-# App Service (.NET 10 API)
+# Microservices
 # ---------------------------------------------------------------------------
 
-variable "app_service_plan_sku" {
-  description = "App Service Plan SKU (e.g. B1, S1, P1v3)"
-  type        = string
+variable "microservices" {
+  description = "Map of microservices to deploy. Key = service name, value = config."
+  type = map(object({
+    plan_sku           = string  # App Service Plan SKU (B1, S1, P1v3)
+    instance_count     = number  # Number of instances
+    dotnet_version     = string  # .NET runtime version
+    repo_url           = string  # Git repo for this service
+    repo_branch        = string  # Git branch
+    sql_sku_name       = string  # SQL Database SKU for this service
+    sql_max_size_gb    = number  # Max DB size in GB
+    sql_database_name  = string  # Database name (defaults to "<service>-db")
+  }))
+
+  validation {
+    condition     = length(var.microservices) > 0
+    error_message = "At least one microservice must be defined."
+  }
 }
 
-variable "app_service_instance_count" {
-  description = "Number of App Service instances"
-  type        = number
-  default     = 1
-}
+# ---------------------------------------------------------------------------
+# Shared App Service Settings
+# ---------------------------------------------------------------------------
 
-variable "dotnet_version" {
-  description = ".NET runtime version for the API"
+variable "dotnet_version_default" {
+  description = "Default .NET runtime version (used if not specified per service)"
   type        = string
   default     = "v10.0"
-}
-
-variable "api_repo_url" {
-  description = "Git repository URL for the .NET API (used by deployment ring)"
-  type        = string
-  default     = ""
-}
-
-variable "api_repo_branch" {
-  description = "Git branch for the .NET API"
-  type        = string
-  default     = "main"
 }
 
 # ---------------------------------------------------------------------------
@@ -90,7 +90,7 @@ variable "frontend_repo_token" {
 }
 
 # ---------------------------------------------------------------------------
-# Azure SQL Database
+# Azure SQL Server (shared across services)
 # ---------------------------------------------------------------------------
 
 variable "sql_server_admin_user" {
@@ -103,23 +103,6 @@ variable "sql_server_admin_password" {
   description = "Admin password for the SQL server"
   type        = string
   sensitive   = true
-}
-
-variable "sql_database_name" {
-  description = "Name of the SQL database"
-  type        = string
-  default     = "appdb"
-}
-
-variable "sql_sku_name" {
-  description = "SQL Database SKU (e.g. GP_Gen5_2, GP_Gen5_4)"
-  type        = string
-}
-
-variable "sql_max_size_gb" {
-  description = "Maximum database size in GB"
-  type        = number
-  default     = 25
 }
 
 # ---------------------------------------------------------------------------
@@ -135,9 +118,9 @@ variable "key_vault_sku" {
 variable "key_vault_access_policies" {
   description = "Key Vault access policies (object_id + permissions)"
   type = list(object({
-    object_id = string
-    keys      = list(string)
-    secrets   = list(string)
+    object_id    = string
+    keys         = list(string)
+    secrets      = list(string)
     certificates = list(string)
   }))
   default = []

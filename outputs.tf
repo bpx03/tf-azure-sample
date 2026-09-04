@@ -8,17 +8,17 @@ output "resource_group_name" {
 }
 
 # ---------------------------------------------------------------------------
-# API
+# Microservices (App Service)
 # ---------------------------------------------------------------------------
 
-output "api_default_domain" {
-  description = "FQDN of the .NET API"
-  value       = module.api.default_domain
+output "api_domains" {
+  description = "Map of service name → FQDN"
+  value       = { for name, app in module.api : name => app.default_domain }
 }
 
-output "api_id" {
-  description = "Resource ID of the App Service"
-  value       = module.api.app_service_id
+output "api_ids" {
+  description = "Map of service name → Resource ID"
+  value       = { for name, app in module.api : name => app.app_service_id }
 }
 
 # ---------------------------------------------------------------------------
@@ -35,17 +35,17 @@ output "frontend_url" {
 # ---------------------------------------------------------------------------
 
 output "sql_server_fqdn" {
-  description = "FQDN of the SQL server"
-  value       = module.sql.server_fqdn
+  description = "FQDN of the SQL server (shared)"
+  value       = module.sql[keys(var.microservices)[0]].server_fqdn
 }
 
-output "sql_database_name" {
-  description = "Name of the SQL database"
-  value       = var.sql_database_name
+output "sql_databases" {
+  description = "Map of service name → database ID"
+  value       = { for name, db in module.sql : name => db.database_id }
 }
 
-# NOTE: connection_string is intentionally NOT exposed as an output.
-# It contains credentials. Use the Key Vault reference in app settings instead.
+# NOTE: connection strings are intentionally NOT exposed as outputs.
+# They contain credentials. Use Key Vault references in app settings instead.
 
 # ---------------------------------------------------------------------------
 # Key Vault
@@ -54,6 +54,11 @@ output "sql_database_name" {
 output "key_vault_uri" {
   description = "URI of the Key Vault"
   value       = module.key_vault.vault_uri
+}
+
+output "key_vault_secret_ids" {
+  description = "Map of service name → secret ID (SQL connection strings)"
+  value       = module.key_vault.sql_connection_string_secret_ids
 }
 
 # ---------------------------------------------------------------------------

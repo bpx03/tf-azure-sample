@@ -42,9 +42,9 @@ variable "repo_token" {
   sensitive   = true
 }
 
-variable "api_url" {
-  description = "URL of the backend API (injected as REACT_APP_API_URL)"
-  type        = string
+variable "api_urls" {
+  description = "Map of service name → API URL (injected as REACT_APP_API_<NAME>)"
+  type        = map(string)
 }
 
 variable "tags" {

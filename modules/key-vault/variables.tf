@@ -45,9 +45,9 @@ variable "access_policies" {
   default = []
 }
 
-variable "sql_connection_string" {
-  description = "SQL connection string to store as a secret"
-  type        = string
+variable "sql_connection_strings" {
+  description = "Map of service name → SQL connection string to store as secrets"
+  type        = map(string)
   sensitive   = true
 }
 

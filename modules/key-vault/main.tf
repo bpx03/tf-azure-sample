@@ -11,7 +11,7 @@ resource "azurerm_key_vault" "main" {
   tags                = var.tags
 
   # Security settings
-  rbac_authorization_enabled        = false # Using access policies (simpler for small teams)
+  rbac_authorization_enabled        = false
   soft_delete_retention_days        = 90
   purge_protection_enabled          = var.environment == "prod"
   enabled_for_deployment            = true
@@ -20,10 +20,10 @@ resource "azurerm_key_vault" "main" {
 
   # Network: restrict to VNet only (no public access)
   network_acls {
-    default_action                = "Deny"
-    bypass                        = "AzureServices"
-    ip_rules                      = []
-    virtual_network_subnet_ids    = [var.subnet_id]
+    default_action             = "Deny"
+    bypass                     = "AzureServices"
+    ip_rules                   = []
+    virtual_network_subnet_ids = [var.subnet_id]
   }
 }
 
@@ -44,12 +44,14 @@ resource "azurerm_key_vault_access_policy" "main" {
 }
 
 # ---------------------------------------------------------------------------
-# Secrets — injected into App Service via key_vault_secret_name_ref
+# Secrets — one per microservice (connection strings)
 # ---------------------------------------------------------------------------
 
-resource "azurerm_key_vault_secret" "sql_connection_string" {
-  name         = "sql-connection-string"
-  value        = var.sql_connection_string
+resource "azurerm_key_vault_secret" "sql_connection_strings" {
+  for_each = toset(keys(var.sql_connection_strings))
+
+  name         = "sql-connection-string-${each.value}"
+  value        = var.sql_connection_strings[each.value]
   key_vault_id = azurerm_key_vault.main.id
   tags         = var.tags
 }
