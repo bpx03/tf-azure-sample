@@ -27,7 +27,13 @@ locals {
     Service = name
   }) }
 
-  # SQL connection strings per service (for Key Vault + app settings)
+  # Only services that need a database
+  services_with_sql = {
+    for name, cfg in var.microservices : name => cfg
+    if cfg.sql_enabled
+  }
+
+  # SQL connection strings per service (only for services with SQL)
   sql_connection_strings = {
     for name, db in module.sql : name => db.connection_string
   }
@@ -60,12 +66,12 @@ module "networking" {
 }
 
 # ---------------------------------------------------------------------------
-# SQL Server (shared) + Databases (per service)
+# SQL Server (shared) + Databases (per service, only if sql_enabled)
 # ---------------------------------------------------------------------------
 
 module "sql" {
   source   = "./modules/sql-database"
-  for_each = var.microservices
+  for_each = local.services_with_sql
 
   server_name           = local.sql_server_name
   database_name         = each.value.sql_database_name != "" ? each.value.sql_database_name : "${each.key}-db"
@@ -94,7 +100,7 @@ module "key_vault" {
   environment         = var.environment
   access_policies     = var.key_vault_access_policies
   subnet_id           = module.networking.app_service_subnet_id
-  # Store connection strings for each service
+  # Store connection strings for services that have SQL
   sql_connection_strings = local.sql_connection_strings
   tags                = local.common_tags
 }
@@ -116,10 +122,10 @@ module "api" {
   subnet_id           = module.networking.app_service_subnet_id
   tags                = local.service_tags[each.key]
 
-  # App settings — injected from SQL
-  app_settings = {
+  # App settings — connection string only if service has SQL
+  app_settings = each.value.sql_enabled ? {
     "ConnectionStrings__Default" = module.sql[each.key].connection_string
-  }
+  } : {}
 }
 
 # ---------------------------------------------------------------------------

@@ -41,14 +41,15 @@ variable "project_name" {
 variable "microservices" {
   description = "Map of microservices to deploy. Key = service name, value = config."
   type = map(object({
-    plan_sku           = string  # App Service Plan SKU (B1, S1, P1v3)
-    instance_count     = number  # Number of instances
-    dotnet_version     = string  # .NET runtime version
-    repo_url           = string  # Git repo for this service
-    repo_branch        = string  # Git branch
-    sql_sku_name       = string  # SQL Database SKU for this service
-    sql_max_size_gb    = number  # Max DB size in GB
-    sql_database_name  = string  # Database name (defaults to "<service>-db")
+    plan_sku          = string  # App Service Plan SKU (B1, S1, P1v3)
+    instance_count    = number  # Number of instances
+    dotnet_version    = string  # .NET runtime version
+    repo_url          = string  # Git repo for this service
+    repo_branch       = string  # Git branch
+    sql_enabled       = bool    # Whether this service needs a SQL database
+    sql_sku_name      = string  # SQL Database SKU (ignored if sql_enabled = false)
+    sql_max_size_gb   = number  # Max DB size in GB (ignored if sql_enabled = false)
+    sql_database_name = string  # Database name (defaults to "<service>-db")
   }))
 
   validation {

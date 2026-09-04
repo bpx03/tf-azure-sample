@@ -18,6 +18,9 @@ project_name = "dotnetapi"
 
 # ---------------------------------------------------------------------------
 # Microservices
+#
+# Each key = service name. To add a new service, just add a new entry.
+# Set sql_enabled = false for services that don't need a database.
 # ---------------------------------------------------------------------------
 
 microservices = {
@@ -27,6 +30,7 @@ microservices = {
     dotnet_version    = "v10.0"
     repo_url          = "https://github.com/your-org/orders-service.git"
     repo_branch       = "main"
+    sql_enabled       = true
     sql_sku_name      = "GP_Gen5_2"
     sql_max_size_gb   = 25
     sql_database_name = "orders-db"
@@ -38,6 +42,7 @@ microservices = {
     dotnet_version    = "v10.0"
     repo_url          = "https://github.com/your-org/users-service.git"
     repo_branch       = "main"
+    sql_enabled       = true
     sql_sku_name      = "GP_Gen5_2"
     sql_max_size_gb   = 25
     sql_database_name = "users-db"
@@ -49,9 +54,23 @@ microservices = {
     dotnet_version    = "v10.0"
     repo_url          = "https://github.com/your-org/payments-service.git"
     repo_branch       = "main"
+    sql_enabled       = true
     sql_sku_name      = "GP_Gen5_2"
     sql_max_size_gb   = 25
     sql_database_name = "payments-db"
+  }
+
+  # Example: service WITHOUT a database (e.g. API gateway, cache, notification)
+  gateway = {
+    plan_sku          = "B1"
+    instance_count    = 1
+    dotnet_version    = "v10.0"
+    repo_url          = "https://github.com/your-org/api-gateway.git"
+    repo_branch       = "main"
+    sql_enabled       = false
+    sql_sku_name      = ""
+    sql_max_size_gb   = 0
+    sql_database_name = ""
   }
 }
 
@@ -66,7 +85,7 @@ frontend_repo_branch = "main"
 # Inject it via: -var "frontend_repo_token=ghp_xxx"
 
 # ---------------------------------------------------------------------------
-# Azure SQL Server (shared)
+# Azure SQL Server (shared — only created if at least one service has sql_enabled)
 # ---------------------------------------------------------------------------
 
 sql_server_admin_user     = "sqladmin"

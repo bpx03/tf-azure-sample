@@ -28,6 +28,7 @@ microservices = {
     dotnet_version    = "v10.0"
     repo_url          = "https://github.com/your-org/orders-service.git"
     repo_branch       = "main"
+    sql_enabled       = true
     sql_sku_name      = "GP_Gen5_8"
     sql_max_size_gb   = 100
     sql_database_name = "orders-db"
@@ -39,6 +40,7 @@ microservices = {
     dotnet_version    = "v10.0"
     repo_url          = "https://github.com/your-org/users-service.git"
     repo_branch       = "main"
+    sql_enabled       = true
     sql_sku_name      = "GP_Gen5_8"
     sql_max_size_gb   = 100
     sql_database_name = "users-db"
@@ -50,9 +52,22 @@ microservices = {
     dotnet_version    = "v10.0"
     repo_url          = "https://github.com/your-org/payments-service.git"
     repo_branch       = "main"
+    sql_enabled       = true
     sql_sku_name      = "GP_Gen5_8"
     sql_max_size_gb   = 100
     sql_database_name = "payments-db"
+  }
+
+  gateway = {
+    plan_sku          = "P1v3"
+    instance_count    = 2
+    dotnet_version    = "v10.0"
+    repo_url          = "https://github.com/your-org/api-gateway.git"
+    repo_branch       = "main"
+    sql_enabled       = false
+    sql_sku_name      = ""
+    sql_max_size_gb   = 0
+    sql_database_name = ""
   }
 }
 
