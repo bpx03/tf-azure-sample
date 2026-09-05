@@ -32,6 +32,9 @@ terraform.rc
 *.swo
 *~
 
+# Local docs / tutorials
+*.html
+
 # OS
 .DS_Store
 Thumbs.db
